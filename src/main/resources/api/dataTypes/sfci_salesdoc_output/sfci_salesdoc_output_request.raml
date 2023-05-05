@@ -1,0 +1,28 @@
+#%RAML 1.0 DataType
+type: object
+properties:
+  searchparams:
+    type: object
+    properties:
+      salesDocument: string
+      outputApplication: string
+  outpuT_TYPE:
+    type: array
+    items:
+      type: object
+      properties:
+        conditionType: string
+        geT_PDF: boolean
+  pagingOptions:
+    type: object
+    properties:
+      pageSize: number
+      pageNumber: number
+      sortFields:
+        type: array
+        items:
+          type: object
+          properties:
+            precedence: number
+            fieldName: string
+            sortDirection: string

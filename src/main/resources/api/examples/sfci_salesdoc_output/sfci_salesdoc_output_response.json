@@ -1,0 +1,30 @@
+{
+  "results": [
+    {
+      "salesDocument": "string",
+      "conditionType": "string",
+      "kschL_TEXT": "string",
+      "language": "string",
+      "pdF_B64STR": "string"
+    }
+  ],
+  "pagingInfo": {
+    "totalRecords": 0,
+    "pageSize": 0,
+    "pageNumber": 0,
+    "sortFields": [
+      {
+        "precedence": 0,
+        "fieldName": "string",
+        "sortDirection": "string"
+      }
+    ]
+  },
+  "messages": [
+    {
+      "type": "default",
+      "message": "string"
+    }
+  ],
+  "success": true
+}

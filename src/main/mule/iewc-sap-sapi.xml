@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <apikit:config name="iewc-sap-sapi-config" api="iewc-sap-sapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="iewc-sap-sapi-main">
+        <http:listener config-ref="http-listener-config" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <ee:transform doc:name="intialisationOfVariables" doc:id="2dbb81dc-9a6d-415f-bd09-0ae25c259ac5">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable variableName="httpMethod"><![CDATA[attributes.method]]></ee:set-variable>
+				<ee:set-variable variableName="correlationId" ><![CDATA[if(!isEmpty(attributes.headers.correlationId)) attributes.headers.correlationId else correlationId]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <apikit:router config-ref="iewc-sap-sapi-config" />
+        <error-handler ref="error-handler" />
+    </flow>
+    <flow name="iewc-sap-sapi-console">
+        <http:listener config-ref="http-listener-config" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="iewc-sap-sapi-config" />
+        <error-handler ref="error-handler" />
+    </flow>
+    <flow name="get:\health:iewc-sap-sapi-config" doc:id="0f19e2fd-2232-4512-b435-4293f0d41648">
+		<flow-ref doc:name="healthCheckFlow" doc:id="258df8be-10a8-45b8-b51a-978714aa3a93" name="health-checkFlow"/>
+    </flow>
+    <flow name="post:\sfci_salesdoc_output:application\json:iewc-sap-sapi-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  results: [
+    {
+      salesDocument: "string",
+      conditionType: "string",
+      kschL_TEXT: "string",
+      language: "string",
+      pdF_B64STR: "string"
+    }
+  ],
+  pagingInfo: {
+    totalRecords: 0,
+    pageSize: 0,
+    pageNumber: 0,
+    sortFields: [
+      {
+        precedence: 0,
+        fieldName: "string",
+        sortDirection: "string"
+      }
+    ]
+  },
+  messages: [
+    {
+      "type": "default",
+      message: "string"
+    }
+  ],
+  success: true
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\price_harm:application\xml:iewc-sap-sapi-config">
+        <ee:transform doc:name="Transform Message" doc:id="8bffc2c2-3e57-4fad-bbae-dc5444b293d6">
+            <ee:message />
+            <ee:variables>
+				<ee:set-variable variableName="source" ><![CDATA['sap-priceharm-papi']]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="02e8ccd0-5ed7-459a-900c-9bc7e1ed3d49" name="subFlow" />
+    </flow>
+    <flow name="post:\tax_request:application\xml:iewc-sap-sapi-config">
+        <ee:transform doc:name="Transform Message" doc:id="3cb80a40-a617-4d42-a5ac-138f14c80583">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="source"><![CDATA['sap-taxrequest-papi']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="4ba04d92-b9e0-4c0c-8095-b96281fac227" name="subFlow" />
+    </flow>
+    <flow name="post:\web_order:application\xml:iewc-sap-sapi-config">
+        <ee:transform>
+            <ee:message>
+            </ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="source" ><![CDATA['sap-weborder-papi']]></ee:set-variable>
+			</ee:variables>
+        </ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="e8fdd93c-2e17-4d53-b47d-73c86ddfe9b2" name="subFlow" />
+    </flow>
+</mule>

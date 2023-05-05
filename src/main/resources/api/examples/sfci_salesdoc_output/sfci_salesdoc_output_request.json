@@ -1,0 +1,23 @@
+{
+  "searchparams": {
+    "salesDocument": "string",
+    "outputApplication": "string"
+  },
+  "outpuT_TYPE": [
+    {
+      "conditionType": "string",
+      "geT_PDF": true
+    }
+  ],
+  "pagingOptions": {
+    "pageSize": 0,
+    "pageNumber": 0,
+    "sortFields": [
+      {
+        "precedence": 0,
+        "fieldName": "string",
+        "sortDirection": "string"
+      }
+    ]
+  }
+}

@@ -1,0 +1,36 @@
+#%RAML 1.0 DataType
+type: object
+properties:
+  results:
+    type: array
+    items:
+      type: object
+      properties:
+        salesDocument: string
+        conditionType: string
+        kschL_TEXT: string
+        language: string
+        pdF_B64STR: string
+  pagingInfo:
+    type: object
+    properties:
+      totalRecords: number
+      pageSize: number
+      pageNumber: number
+      sortFields:
+        type: array
+        items:
+          type: object
+          properties:
+            precedence: number
+            fieldName: string
+            sortDirection: string
+  messages:
+    type: array
+    items:
+      type: object
+      properties:
+        type: string
+        message: string
+  success:
+    type: boolean
